@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.atguigu.springcloud.dao.PaymentMapper">
+    <resultMap type="Payment" id="PaymentResult">
+        <result property="id"    column="id"    />
+        <result property="serial"    column="serial"    />
+    </resultMap>
+
+    <sql id="selectPaymentVo">
+        select id, serial from payment
+    </sql>
+
+    <select id="selectPaymentList" parameterType="Payment" resultMap="PaymentResult">
+        <include refid="selectPaymentVo"/>
+        <where>
+            <if test="serial != null  and serial != ''"> and serial = #{serial}</if>
+        </where>
+    </select>
+
+    <select id="selectPaymentById" parameterType="Long" resultMap="PaymentResult">
+        <include refid="selectPaymentVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertPayment" parameterType="Payment" useGeneratedKeys="true" keyProperty="id">
+        insert into payment
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="serial != null">serial,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="serial != null">#{serial},</if>
+        </trim>
+    </insert>
+
+    <update id="updatePayment" parameterType="Payment">
+        update payment
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="serial != null">serial = #{serial},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deletePaymentById" parameterType="Long">
+        delete from payment where id = #{id}
+    </delete>
+
+    <delete id="deletePaymentByIds" parameterType="String">
+        delete from payment where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>
